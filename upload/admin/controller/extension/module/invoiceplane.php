@@ -1,6 +1,6 @@
 <?php
 
-class ControllerExtensionModuleinvoiceplane extends Controller {
+class ControllerExtensionModuleInvoicePlane extends Controller {
 	
 	private $error 						= array();
 	private $version 					= '0.0.1';

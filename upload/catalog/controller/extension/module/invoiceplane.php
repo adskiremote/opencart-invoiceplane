@@ -1,4 +1,15 @@
 <?php
+//==============================================================================
+// InvoicePlane Integration v0.1
+// 
+// Author: Adam Smith - Cortek Solutions
+// E-mail: adam.smith@cortek-solutions.com
+// Website: https://cortek-solutions.com
+//
+// Summary
+// Sends and syncs Orders, Customers and Payments to InvoicePlane
+// 
+//==============================================================================
 
 class ControllerExtensionModuleInvoiceplane extends Controller
 {
@@ -12,99 +23,63 @@ class ControllerExtensionModuleInvoiceplane extends Controller
         return $this->load->view('extension/module/invoiceplane', $data);
     }
 
-    public function subscribe($data)
+    public function sendOrder($data)
     {
-        
         $apiKey = $this->config->get('ip_api_key');
         $ipUrl = $this->config->get('ip_url');
 
-         $response = array();
-         // Skip for localhost testing
-        if ($this->whitelist()) {
-            $response['status'] = 'error';
-            $response['message'] = 'Running localhost';
-            return $response;
-        }
-
-        
-
-        if ($MailChimp->success()) {
-            $response['status'] = 'success';
-            $response['message'] = $mailchimp['message'];
-            return true;
-        } else {
-            $response['status'] = 'error';
-            $response['message'] = $MailChimp->getLastError();
-            return false;
-        }
-    }
-
-    public function unSubscribe($data)
-    {
         $response = array();
-        if ($this->whitelist()) {
-            $response['status'] = 'error';
-            $response['message'] = 'Running localhost';
-            return $response;
-        }
 
-        $apiKey = $this->config->get('wocmailchimp_api_key');
-        $listId = $this->config->get('wocmailchimp_list_id');
+        $invoicePlane = new InvoicePlane($apikey, $ipUrl);
+        $result = $invoicePlane->sendInvoice($data);
 
-        $MailChimp = new MailChimp($apiKey);
-        $subscriber_hash = $MailChimp->subscriberHash($data['email']);
-        $result = $MailChimp->patch("lists/$listId/members/$subscriber_hash", [
-                'status'    => 'unsubscribed'
-            ]);
-        if ($MailChimp->success()) {
-            $response['status'] = 'success';
-            $response['message'] = $result['message'];
+        if ($invoicePlane->success()) {
+            return $response = [
+                'success' => true,
+                'result' =>  $result
+            ];
         } else {
-            $response['status'] = 'error';
-            $response['message'] = $MailChimp->getLastError();
+            return $response = [
+                'success' => false,
+                'result' => 'error'
+            ];
         }
-              return $response;
     }
 
-    public function update($data)
+    // One way only sync customers to InvoicePlane Clients
+    // If customer exists - skip
+    public function syncCustomers()
     {
-
-        $apiKey = $this->config->get('wocmailchimp_api_key');
-        $listId = $this->config->get('wocmailchimp_list_id');
-
-        $MailChimp = new MailChimp($apiKey);
-        $subscriber_hash = $MailChimp->subscriberHash($data['email']);
-        $result = $MailChimp->patch("lists/$listId/members/$subscriber_hash", [
-                'merge_fields' => ['FNAME'=>$data['firstname'], 'LNAME'=>$data['lastname']
-                ]]);
-        return $result;
+        $invoicePlane = new InvoicePlane($apikey, $ipUrl);
+        $result = $invoicePlane->syncCustomers();
+        $this->log->write('Result:' . print_r($result, true));
     }
 
-    public function delete($data)
+    // On successful payment - sends to InvoicePlane
+    public function sendPayment($data)
     {
-        if ($this->whitelist()) {
-            $response['status'] = 'error';
-            $response['message'] = 'Running localhost';
-            return $response;
-        }
+        $apiKey = $this->config->get('ip_api_key');
+        $ipUrl = $this->config->get('ip_url');
 
-        $apiKey = $this->config->get('wocmailchimp_api_key');
-        $listId = $this->config->get('wocmailchimp_list_id');
+        $response = array();
+        $data = ['123', 'hello', 'adam'];
 
-        $MailChimp = new MailChimp($apiKey);
-        $subscriber_hash = $MailChimp->subscriberHash($data['email']);
-        $result = $MailChimp->delete("lists/$listId/members/$subscriber_hash");
-        return $result;
-    }
+        $invoicePlane = new InvoicePlane($apikey, $ipUrl);
+        $result = $invoicePlane->sendInvoice($data);
+        
+        $this->log->write('Result: ' . print_r($result, true));
+    
 
-    public function whitelist()
-    {
-        $whitelist = array('127.0.0.1', '::1', 'localhost');
-        // Skip for localhost testing
-        if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
-            return true;
+        if ($invoicePlane->success()) {
+            return $response = [
+                'success' => true,
+                'result' =>  $result
+            ];
         } else {
-            return false;
+            return $response = [
+                'success' => false,
+                'result' => 'error'
+            ];
         }
     }
 }
