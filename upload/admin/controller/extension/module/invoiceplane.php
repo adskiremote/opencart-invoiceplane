@@ -15,6 +15,8 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
 
 		//Set title from language file
 		$this->document->setTitle($this->language->get('heading_title'));
+
+		// $this->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true));
 		
 		$data = array();
 		
@@ -142,6 +144,13 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
     public function uninstall() {
    	$this->load->model('setting/setting');
 	$this->model_setting_setting->deleteSetting('invoiceplane');
+   }
+
+   public function syncproducts() {
+		$this->load->model('catalog/product');
+		$results = $this->model_catalog_product->getProducts();
+		$this->response->setOutput(json_encode($results));
+
    }
 
 	private function validate() {

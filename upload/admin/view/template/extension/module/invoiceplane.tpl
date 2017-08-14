@@ -1,5 +1,6 @@
 <?php echo $header; ?>
 <?php echo $column_left; ?>
+
 <div id="content">
     <div class="page-header">
         <div class="container-fluid">
@@ -209,6 +210,7 @@
     </div>
 </div>
 <script type="text/javascript">
+    <!--
     // Populate options
     $('#button-pop-options').on('click', function() {
         var options = {
@@ -261,8 +263,17 @@
     $('#button-sync-products').on('click', function() {
         var options = {
             type: 'GET',
-            url: 'http://localhost:4111/api/products/sync'
+            url: 'index.php?route=extension/module/invoiceplane/syncproducts&token=<?php echo $session; ?>'
         }
+
+        $.ajax({
+            type: options.type,
+            url: options.url,
+            crossDomain: true,
+            success: function(data) {
+                console.log(data);
+            }
+        });
 
     });
 
@@ -299,5 +310,6 @@
             }
         });
     }
+    //-->
 </script>
 <?php echo $footer; ?>
