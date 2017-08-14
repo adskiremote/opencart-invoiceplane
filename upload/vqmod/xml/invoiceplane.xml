@@ -24,4 +24,13 @@
 	</file>
 	<!-- End Account Register Controller -->
 
+	<file path="admin/view/template/sale/order_info.tpl">
+	<operation>
+			<search><![CDATA[<div class="pull-right">]]></search>
+			<add position="replace"><![CDATA[
+			<div class="pull-right">
+			<a data-toggle="tooltip" id="orderAddInvoicePlane" title="Sync to InvoicePlane" class="btn btn-info"><i class="fa fa-plus"></i></a>
+			]]></add>
+		</operation>
+		</file>
 </modification>

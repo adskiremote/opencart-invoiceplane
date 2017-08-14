@@ -28,6 +28,7 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
 		} else {
 			 $data['invoiceplane_api_key'] = $this->config->get('invoiceplane_api_key');
 			 $data['invoiceplane_url'] = $this->config->get('invoiceplane_url');
+			 $data['invoiceplane_on_order'] = $this->config->get('invoiceplane_on_order');
 			// $this->log->write($data);
 		}
 		
@@ -38,6 +39,9 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
 				'button_add_module',
 				'button_remove',
 				'placeholder',
+				'text_yes',
+				'text_no',
+				'text_loading'
 		);
 		
 		foreach ($text_strings as $text) {
@@ -91,18 +95,25 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
             $data['invoiceplane_status'] = $this->config->get('invoiceplane_status');
         }
 
-		// This block parses the status (enabled / disabled)
+		// This block parses InvoicePlane APIKEY
         if (isset($this->request->post['invoiceplane_api_key'])) {
             $data['invoiceplane_api_key'] = $this->request->post['invoiceplane_api_key'];
         } else {
             $data['invoiceplane_api_key'] = $this->config->get('invoiceplane_api_key');
         }
 
-		// This block parses the status (enabled / disabled)
+		// This block parses InvoicePlane server url
         if (isset($this->request->post['invoiceplane_url'])) {
             $data['invoiceplane_url'] = $this->request->post['invoiceplane_url'];
         } else {
             $data['invoiceplane_url'] = $this->config->get('invoiceplane_url');
+        }
+
+		// This block parses InvoicePlane OnOrder disable | enable
+        if (isset($this->request->post['invoiceplane_on_order'])) {
+            $data['invoiceplane_on_order'] = $this->request->post['invoiceplane_on_order'];
+        } else {
+            $data['invoiceplane_on_order'] = $this->config->get('invoiceplane_on_order');
         }
 
 		//Prepare for display
