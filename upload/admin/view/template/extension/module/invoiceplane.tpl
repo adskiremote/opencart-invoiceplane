@@ -42,6 +42,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="#tab-products" data-toggle="tab">
+                               Products
+                            </a>
+                        </li>
+                        <li>
                             <a href="#tab-customers" data-toggle="tab">
                                Customers
                             </a>
@@ -70,7 +75,6 @@
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab-status">
                             <legend>InvoicePlane Status</legend>
-                            Check your InvoicePlane is correctly synced with OpenCart<br />Click on repair to fix any issues.
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">On order</label>
                                 <div class="col-sm-10">
@@ -85,6 +89,22 @@
                         </select>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Check connection</label>
+                                <div class="col-sm-10">
+                                    <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                                    <button type="button" onclick="repair();" id="button-repair" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-success"><i class="fa fa-wrench"></i> Check Connection</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab-products">
+                            <fieldset>
+                                <legend>Products Sync</legend>
+                                Sync OpenCart to InvoicePlane products
+                                <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                                <button type="button" onclick="repair();" id="button-repair" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary"><i class="fa fa-wrench"></i> Some button</button>
+
+                            </fieldset>
                         </div>
                         <!-- End Tab Status -->
                         <div class="tab-pane" id="tab-customers">
