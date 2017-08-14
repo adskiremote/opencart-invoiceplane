@@ -11,6 +11,12 @@ Available here: https://github.com/adskiremote/InvoicePlane
 - InvoicePlane API
 - OpenCart VQmod
 
+### Currently WIP - Stable version coming soon
+- Send all OpenCart customers to InvoicePlane
+- Sync OpenCart Products to InvoicePlane
+- Sync of OpenCart Orders to InvoicePlane Payments and Invoices
+- Auto and Manual add Customers, Orders, Payments and Prodcuts
+
 ### Setup
 - Place files in upload directory into OpenCart.
 - Check vqmod InvoicePlane extension is enabled
@@ -22,7 +28,7 @@ Available here: https://github.com/adskiremote/InvoicePlane
 You can test your InvoicePlane API using Postman.
 > Download Postman test routes here: `https://drive.google.com/open?id=0B86bid2EVKrVQXN0Qm51dlE0Z3M`
 
-API routes cna be used to return all data from InvoicePlane or by ID.
+API routes can be used to return all data from InvoicePlane or by ID.
 
 ````
 Route: http://localhost/api/clients/clients/
