@@ -15,7 +15,7 @@ Available here: https://github.com/adskiremote/InvoicePlane
 - Send all OpenCart customers to InvoicePlane
 - Sync OpenCart Products to InvoicePlane
 - Sync of OpenCart Orders to InvoicePlane Payments and Invoices
-- Auto and Manual add Customers, Orders, Payments and Prodcuts
+- Auto and Manual add Customers, Orders, Payments and Products
 
 ### Setup
 - Place files in upload directory into OpenCart.
