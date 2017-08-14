@@ -74,21 +74,8 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab-status">
-                            <legend>InvoicePlane Status</legend>
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">On order</label>
-                                <div class="col-sm-10">
-                                    <select name="invoiceplane_on_order" class="form-control">
-                            <?php if ($invoiceplane_on_order) { ?>
-                            <option value="1" selected="selected"><?php echo $text_yes; ?></option>
-                            <option value="0"><?php echo $text_no; ?></option>
-                            <?php } else { ?>
-                            <option value="1"><?php echo $text_yes; ?></option>
-                            <option value="0" selected="selected"><?php echo $text_no; ?></option>
-                            <?php } ?>
-                        </select>
-                                </div>
-                            </div>
+                            <legend>Status</legend>
+                            Check integration connection
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Check connection</label>
                                 <div class="col-sm-10">
@@ -99,10 +86,42 @@
                         </div>
                         <div class="tab-pane" id="tab-products">
                             <fieldset>
-                                <legend>Products Sync</legend>
-                                Sync OpenCart to InvoicePlane products
-                                <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
-                                <button type="button" onclick="repair();" id="button-repair" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary"><i class="fa fa-wrench"></i> Some button</button>
+                                <legend>Products sync</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Options</label>
+                                    <div class="col-sm-10">
+                                        <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                                        <button type="button" id="button-pop-options" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-success"><i class="fa fa-wrench"></i> Populate Options</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Product Family</label>
+                                    <div class="col-sm-10">
+                                        <select name="invoiceplane_families" id="invoiceplane_families" class="form-control"></select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Tax Rate</label>
+                                    <div class="col-sm-10">
+                                        <select name="invoiceplane_tax_rates" id="invoiceplane_tax_rates" class="form-control"></select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Unit</label>
+                                    <div class="col-sm-10">
+                                        <select name="invoiceplane_units" id="invoiceplane_units" class="form-control"></select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Sync (one way)</label>
+                                    <div class="col-sm-10">
+                                        <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                                        <button type="button" id="button-sync-products" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary"><i class="fa fa-wrench"></i> Sync Products</button>
+                                    </div>
+                                </div>
 
                             </fieldset>
                         </div>
@@ -135,8 +154,7 @@
 
                         <div class="tab-pane" id="tab-settings">
                             <fieldset>
-                                <legend>This is tiutle 12</legend>
-                                And tyhe description
+                                <legend>Settings</legend>
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">API Key</label>
                                     <div class="col-sm-10">
@@ -149,14 +167,39 @@
                                         <input type="text" name="invoiceplane_url" id="input-list-id" class="form-control" value="<?php echo $invoiceplane_url; ?>" data-toggle="tooltip" data-placement="bottom" title="InvoicePlane Url" />
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">On order</label>
+                                    <div class="col-sm-10">
+                                        <select name="invoiceplane_on_order" class="form-control">
+                            <?php if ($invoiceplane_on_order) { ?>
+                            <option value="1" selected="selected"><?php echo $text_yes; ?></option>
+                            <option value="0"><?php echo $text_no; ?></option>
+                            <?php } else { ?>
+                            <option value="1"><?php echo $text_yes; ?></option>
+                            <option value="0" selected="selected"><?php echo $text_no; ?></option>
+                            <?php } ?>
+                        </select>
+                                    </div>
+                                </div>
                             </fieldset>
                         </div>
                         <div class="tab-pane" id="tab-repair">
                             <fieldset>
-                                <legend>This is tiutle 12</legend>
-                                And tyhe description
-                                <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
-                                <button type="button" onclick="repair();" id="button-repair" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary"><i class="fa fa-wrench"></i> Some button</button>
+                                <legend>Warning - backup your databases first!</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Repair integration tables</label>
+                                    <div class="col-sm-10">
+                                        <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                                        <button type="button" onclick="repair();" id="button-repair" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary"><i class="fa fa-wrench"></i> Repair</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Reset | Delete All settings</label>
+                                    <div class="col-sm-10">
+                                        <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                                        <button type="button" id="button-reset" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-danger"><i class="fa fa-wrench"></i> Reset</button>
+                                    </div>
+                                </div>
                             </fieldset>
                         </div>
                     </div>
@@ -165,4 +208,96 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    // Populate options
+    $('#button-pop-options').on('click', function() {
+        var options = {
+            type: 'GET',
+            url: 'http://localhost:4111/api/products/options/'
+        }
+
+        $('#invoiceplane_families').empty();
+        $('#invoiceplane_tax_rates').empty();
+        $('#invoiceplane_units').empty();
+
+        $.ajax({
+            type: options.type,
+            url: options.url,
+            crossDomain: true,
+            success: function(data) {
+                // console.log(data);
+                if (data.success) {
+                    console.log(data);
+                    // Populate Families
+                    $.each(data.families, function(i, item) {
+                        $('#invoiceplane_families').append('<option value="' + item.family_id + '">' + item.family_name + '</option>');
+                    });
+
+                    // Populate Tax Rates
+                    $.each(data.tax_rates, function(i, item) {
+                        $('#invoiceplane_tax_rates').append('<option value="' + item.tax_rate_id + '">' + item.tax_rate_name + ' - ' + item.tax_rate_percent + '%</option>');
+                    });
+
+                    // Populate Units
+                    $.each(data.units, function(i, item) {
+                        $('#invoiceplane_units').append('<option value="' + item.unit_id + '">' + item.unit_name + '</option>');
+                    });
+                } else {
+                    alert('Error\n' + data.message);
+                }
+            },
+            failure: function() {
+                alert('Error\n' + data.message);
+            },
+            error: function() {
+                alert('Error\n' + data.message);
+            }
+        });
+
+
+    });
+
+    // Sync Products
+    $('#button-sync-products').on('click', function() {
+        var options = {
+            type: 'GET',
+            url: 'http://localhost:4111/api/products/sync'
+        }
+
+    });
+
+    // Reset
+    $('#button-reset').on('click', function() {
+        var options = {
+            type: 'GET',
+            url: 'http://localhost:4111/api/products/products/'
+        }
+        ajaxSend(options);
+
+
+    });
+
+    function ajaxSend(options) {
+        console.log(options);
+        $.ajax({
+            type: options.type,
+            url: options.url,
+            crossDomain: true,
+            success: function(data) {
+                console.log(data);
+                if (data.success) {
+
+                } else {
+
+                }
+            },
+            failure: function() {
+
+            },
+            error: function() {
+
+            }
+        });
+    }
+</script>
 <?php echo $footer; ?>

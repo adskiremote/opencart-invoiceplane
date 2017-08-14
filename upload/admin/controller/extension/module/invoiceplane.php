@@ -29,6 +29,7 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
 			 $data['invoiceplane_api_key'] = $this->config->get('invoiceplane_api_key');
 			 $data['invoiceplane_url'] = $this->config->get('invoiceplane_url');
 			 $data['invoiceplane_on_order'] = $this->config->get('invoiceplane_on_order');
+			 $data['invoiceplane_product_family'] = $this->config->get('invoiceplane_product_family');
 			// $this->log->write($data);
 		}
 		
@@ -115,6 +116,15 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
         } else {
             $data['invoiceplane_on_order'] = $this->config->get('invoiceplane_on_order');
         }
+
+		// This block parses InvoicePlane Product Family
+        if (isset($this->request->post['invoiceplane_product_family'])) {
+            $data['invoiceplane_product_family'] = $this->request->post['invoiceplane_product_family'];
+        } else {
+            $data['invoiceplane_product_family'] = $this->config->get('invoiceplane_product_family');
+        }
+
+		
 
 		//Prepare for display
 		$this->load->model('design/layout');

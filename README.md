@@ -23,7 +23,6 @@ Available here: https://github.com/adskiremote/InvoicePlane
 - Enable at OpenCart -> Extensions -> Modules -> InvoicePlane
 - Enter your API Key and InvoicePlane server url
 
-
 ### Testing InvoicePlane REST API
 You can test your InvoicePlane API using Postman.
 > Download Postman test routes here: `https://drive.google.com/open?id=0B86bid2EVKrVQXN0Qm51dlE0Z3M`
