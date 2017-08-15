@@ -226,7 +226,7 @@
     $('#button-pop-options').on('click', function() {
         var options = {
             type: 'GET',
-            url: 'http://localhost:4111/api/products/options/'
+            url: '<?php echo $invoiceplane_url; ?>' + '/api/products/options/'
         }
 
         $('#invoiceplane_families').empty();

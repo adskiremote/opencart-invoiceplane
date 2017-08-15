@@ -15,9 +15,6 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
 
 		//Set title from language file
 		$this->document->setTitle($this->language->get('heading_title'));
-
-		// $this->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true));
-		
 		$data = array();
 		
 		//Save settings
@@ -26,7 +23,7 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
 			 $this->model_setting_setting->editSetting('invoiceplane', $this->request->post);
 					
 			$this->session->data['success'] = $this->language->get('text_success');
-			$this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true));
+			$this->response->redirect($this->url->link('extension/module/invoiceplane', 'token=' . $this->session->data['token'] . '&type=module', true));
 		} else {
 			 $data['invoiceplane_api_key'] = $this->config->get('invoiceplane_api_key');
 			 $data['invoiceplane_url'] = $this->config->get('invoiceplane_url');
@@ -147,12 +144,29 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
    }
 
    public function syncproducts() {
+	   	$this->load->model('setting/setting');
+		$apiKey = $this->config->get('invoiceplane_api_key');
+        $apiUrl = $this->config->get('invoiceplane_url');
+
 		$this->load->model('catalog/product');
 		$filter_data = array('limit' => 10);
-		$results = $this->model_catalog_product->getProducts($filter_data);
-		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($results));
+		$oc_products = $this->model_catalog_product->getProducts($filter_data);
+		$ip_products = array();
+		$result = array();
 
+        $invoicePlane = new InvoicePlane($apiKey, $apiUrl);		
+		$result = $invoicePlane->addProduct('test');
+
+		/*
+		foreach($oc_products as $oc_product) {
+			$ip_products[]['name'] = $oc_product['name'];
+			// $result[] = $invoicePlane->addProduct($oc_product);
+
+		}
+		*/
+
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($result));
    }
 
 	private function validate() {

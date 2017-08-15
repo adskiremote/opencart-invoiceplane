@@ -11,20 +11,18 @@
 class Invoiceplane {
 	private $type = 'module';
 	private $name = 'invoiceplane_integration';
-	private $settings;
+	private $apiKey;
+	private $apiUrl;
 	
-	public function __construct() {
-		// $this->config = $config;
-		// $this->db = $db;
-		// $this->log = $log;
-		// $this->session = $session;
-		// $this->url = $url;
+	public function __construct($apiKey, $apiUrl) {
+		$this->apiKey = $apiKey;
+		$this->apiUrl = $apiUrl;
 	}
 
     public function sendInvoice($data) {
         $curl_request = 'GET';
-        $curl_api = '123';
-        $curl_url = 'http://localhost:4111/api/quotes/quotes/';
+        $curl_api = $this->apiKey;
+        $curl_url = $this->apiUrl;
         $curl_data = [1,2,3,4,5];
         $response = $this->curlRequest($curl_request, $curl_api, $curl_url, $curl_data);
         return $response;
@@ -34,21 +32,26 @@ class Invoiceplane {
 
 	}
 
-
+	public function addProduct($data) {
+		$curl_request = 'GET';
+        $curl_api = $this->apiKey;
+        $curl_url = $this->apiUrl . '/api/quotes/quotes/';
+        $curl_data = $data;
+        $response = $this->curlRequest($curl_request, $curl_api, $curl_url, $curl_data);
+		return $response;
+	}
 
     // cURL Request
-    private function curlRequest($request, $api, $url, $data = array()) {
-		//$apikey = $this->config->get($this->name . '_apikey');
-		//$data_center = explode('-', $apikey);
-		
+    private function curlRequest($request, $api, $url, $data = array()) {		
 		if ($request == 'GET') {
-			// $curl = curl_init($url . $api . '?' . http_build_query($data));
-            $curl = curl_init('http://localhost:4111/api/quotes/quotes/'); // Testing
+			$curl = curl_init();
+			curl_setopt($curl, CURLOPT_URL, $url);
+			curl_setopt($curl, CURLOPT_HTTPHEADER, array('api-key: ' . $api));
 		} else {
-			$curl = curl_init($url . $api);
+			$curl = curl_init($url);
 			curl_setopt($curl, CURLOPT_POST, true);
 			curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-			curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+			curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'api-key: ' . $api));
 			if ($request != 'POST') {
 				curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $request);
 			}
@@ -61,16 +64,7 @@ class Invoiceplane {
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_TIMEOUT, 300);
-		// curl_setopt($curl, CURLOPT_USERPWD, ' :' . $this->config->get($this->name . '_apikey'));
 		$response = json_decode(curl_exec($curl), true);
-		
-		
-		// if ($this->config->get($this->name . '_testing_mode') == 'debug') {
-		//	$this->log->write($request . ' ' . $url . $api);
-		//	$this->log->write('Data Sent: ' . print_r($data, true));
-		
-		// }
-		
 		
 		if (curl_error($curl)) {
 			$response['error'] = 'CURL ERROR #' . curl_errno($curl) . ' - ' . curl_error($curl);
