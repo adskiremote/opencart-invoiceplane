@@ -1,3 +1,4 @@
+<?php header("Access-Control-Allow-Origin: *"); ?>
 <?php echo $header; ?>
 <?php echo $column_left; ?>
 
@@ -124,6 +125,13 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group" id="product-sync-log">
+                                    <label class="col-sm-2 control-label">Logs</label>
+                                    <div class="col-sm-10">
+                                        <textarea id="product-logs" rows="20" style="width:100%;" disabled></textarea>
+                                    </div>
+                                </div>
+
                             </fieldset>
                         </div>
                         <!-- End Tab Status -->
@@ -211,6 +219,9 @@
 </div>
 <script type="text/javascript">
     <!--
+
+    $('#product-sync-log').hide();
+
     // Populate options
     $('#button-pop-options').on('click', function() {
         var options = {
@@ -222,10 +233,14 @@
         $('#invoiceplane_tax_rates').empty();
         $('#invoiceplane_units').empty();
 
+        var api_key = '<?php echo $invoiceplane_api_key; ?>';
+
         $.ajax({
             type: options.type,
             url: options.url,
-            crossDomain: true,
+            headers: {
+                'API-KEY': api_key
+            },
             success: function(data) {
                 // console.log(data);
                 if (data.success) {
@@ -269,9 +284,12 @@
         $.ajax({
             type: options.type,
             url: options.url,
-            crossDomain: true,
             success: function(data) {
                 console.log(data);
+                $('#product-sync-log').show();
+                $.each(data, function(i, item) {
+                    $('#product-logs').append('Updating: ' + item.name + '\r\n');
+                })
             }
         });
 

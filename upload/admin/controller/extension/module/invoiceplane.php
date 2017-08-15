@@ -148,7 +148,9 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
 
    public function syncproducts() {
 		$this->load->model('catalog/product');
-		$results = $this->model_catalog_product->getProducts();
+		$filter_data = array('limit' => 10);
+		$results = $this->model_catalog_product->getProducts($filter_data);
+		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($results));
 
    }
