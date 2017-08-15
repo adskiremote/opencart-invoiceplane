@@ -29,6 +29,8 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
 			 $data['invoiceplane_url'] = $this->config->get('invoiceplane_url');
 			 $data['invoiceplane_on_order'] = $this->config->get('invoiceplane_on_order');
 			 $data['invoiceplane_product_family'] = $this->config->get('invoiceplane_product_family');
+			 $data['invoiceplane_tax_rates'] = $this->config->get('invoiceplane_tax_rates');
+			 $data['invoiceplane_unit_id'] = $this->config->get('invoiceplane_unit_id');
 			// $this->log->write($data);
 		}
 		
@@ -123,8 +125,21 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
             $data['invoiceplane_product_family'] = $this->config->get('invoiceplane_product_family');
         }
 
-		
+		// This block parses InvoicePlane Unit ID
+        if (isset($this->request->post['invoiceplane_unit_id'])) {
+            $data['invoiceplane_unit_id'] = $this->request->post['invoiceplane_unit_id'];
+        } else {
+            $data['invoiceplane_unit_id'] = $this->config->get('invoiceplane_unit_id');
+        }
 
+		// This block parses InvoicePlane Tax ID
+        if (isset($this->request->post['invoiceplane_tax_rates'])) {
+            $data['invoiceplane_tax_rates'] = $this->request->post['invoiceplane_tax_rates'];
+        } else {
+            $data['invoiceplane_tax_rates'] = $this->config->get('invoiceplane_tax_rates');
+        }
+
+		
 		//Prepare for display
 		$this->load->model('design/layout');
 		
@@ -147,25 +162,31 @@ class ControllerExtensionModuleInvoicePlane extends Controller {
 	   	$this->load->model('setting/setting');
 		$apiKey = $this->config->get('invoiceplane_api_key');
         $apiUrl = $this->config->get('invoiceplane_url');
+		$unit_id = $this->config->get('invoiceplane_unit_id');
+		$family_id = $this->config->get('invoiceplane_product_family');
+		$tax_rate_id = $this->config->get('invoiceplane_tax_rates');
 
 		$this->load->model('catalog/product');
 		$filter_data = array('limit' => 10);
 		$oc_products = $this->model_catalog_product->getProducts($filter_data);
-		$ip_products = array();
+
+        $invoicePlane = new InvoicePlane($apiKey, $apiUrl);
 		$result = array();
-
-        $invoicePlane = new InvoicePlane($apiKey, $apiUrl);		
-		$result = $invoicePlane->addProduct('test');
-
-		/*
+		$ip_product = array();
+		
 		foreach($oc_products as $oc_product) {
-			$ip_products[]['name'] = $oc_product['name'];
-			// $result[] = $invoicePlane->addProduct($oc_product);
-
+			$ip_product['product_name'] = $oc_product['name'];
+			$ip_product['family_id'] = $family_id;
+			$ip_product['product_sku'] = $oc_product['sku'];
+			$ip_product['product_description'] = $oc_product['description'];
+			$ip_product['unit_id'] = $unit_id;
+			$ip_product['tax_rate_id'] = $tax_rate_id;
+			$ip_product['product_price'] = $oc_product['price'];
+			$ip_product['purchase_price'] = $oc_product['price'];
+			$result[] = array($invoicePlane->addProduct($ip_product));
 		}
-		*/
-
-		$this->response->addHeader('Content-Type: application/json');
+		
+		// $this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($result));
    }
 

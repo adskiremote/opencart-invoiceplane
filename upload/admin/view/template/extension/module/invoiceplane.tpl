@@ -99,21 +99,33 @@
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">Product Family</label>
                                     <div class="col-sm-10">
-                                        <select name="invoiceplane_families" id="invoiceplane_families" class="form-control"></select>
+                                        <select name="invoiceplane_product_family" id="invoiceplane_product_family" class="form-control">
+                                          <?php if ($invoiceplane_product_family) { ?>
+                                            <option value="<?php echo invoiceplane_product_family; ?>" selected="selected"><?php echo $invoiceplane_product_family; ?></option>
+                                            <?php } ?>
+                                        </select>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">Tax Rate</label>
                                     <div class="col-sm-10">
-                                        <select name="invoiceplane_tax_rates" id="invoiceplane_tax_rates" class="form-control"></select>
+                                        <select name="invoiceplane_tax_rates" id="invoiceplane_tax_rates" class="form-control">
+                                              <?php if ($invoiceplane_tax_rates) { ?>
+                                            <option value="<?php echo invoiceplane_tax_rates; ?>" selected="selected"><?php echo $invoiceplane_tax_rates; ?></option>
+                                            <?php } ?>
+                                        </select>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">Unit</label>
                                     <div class="col-sm-10">
-                                        <select name="invoiceplane_units" id="invoiceplane_units" class="form-control"></select>
+                                        <select name="invoiceplane_unit_id" id="invoiceplane_unit_id" class="form-control">
+                                              <?php if ($invoiceplane_unit_id) { ?>
+                                            <option value="<?php echo invoiceplane_unit_id; ?>" selected="selected"><?php echo $invoiceplane_unit_id; ?></option>
+                                            <?php } ?>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -229,9 +241,9 @@
             url: '<?php echo $invoiceplane_url; ?>' + '/api/products/options/'
         }
 
-        $('#invoiceplane_families').empty();
+        $('#invoiceplane_product_family').empty();
         $('#invoiceplane_tax_rates').empty();
-        $('#invoiceplane_units').empty();
+        $('#invoiceplane_unit_id').empty();
 
         var api_key = '<?php echo $invoiceplane_api_key; ?>';
 
@@ -247,7 +259,7 @@
                     console.log(data);
                     // Populate Families
                     $.each(data.families, function(i, item) {
-                        $('#invoiceplane_families').append('<option value="' + item.family_id + '">' + item.family_name + '</option>');
+                        $('#invoiceplane_product_family').append('<option value="' + item.family_id + '">' + item.family_name + '</option>');
                     });
 
                     // Populate Tax Rates
@@ -257,7 +269,7 @@
 
                     // Populate Units
                     $.each(data.units, function(i, item) {
-                        $('#invoiceplane_units').append('<option value="' + item.unit_id + '">' + item.unit_name + '</option>');
+                        $('#invoiceplane_unit_id').append('<option value="' + item.unit_id + '">' + item.unit_name + '</option>');
                     });
                 } else {
                     alert('Error\n' + data.message);
@@ -284,12 +296,26 @@
         $.ajax({
             type: options.type,
             url: options.url,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
             success: function(data) {
                 console.log(data);
                 $('#product-sync-log').show();
                 $.each(data, function(i, item) {
-                    $('#product-logs').append('Updating: ' + item.name + '\r\n');
+                    console.log(i);
+                    console.log(item.status);
+                    console.log(item[i].status);
+                    $('#product-logs').append('Updating: ' + item[i].message + '\r\n');
                 })
+            },
+            failure: function() {
+                console.log("Failure");
+            },
+            error: function() {
+                console.log('error');
+            },
+            complete: function() {
+                console.log("Complete");
             }
         });
 
