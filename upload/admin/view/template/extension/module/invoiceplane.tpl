@@ -238,20 +238,19 @@
     $('#button-pop-options').on('click', function() {
         var options = {
             type: 'GET',
-            url: '<?php echo $invoiceplane_url; ?>' + '/api/products/options/'
+            url: '<?php echo $invoiceplane_url; ?>' + '/api/products/options/',
+            api_key: '<?php echo $invoiceplane_api_key; ?>'
         }
 
         $('#invoiceplane_product_family').empty();
         $('#invoiceplane_tax_rates').empty();
         $('#invoiceplane_unit_id').empty();
 
-        var api_key = '<?php echo $invoiceplane_api_key; ?>';
-
         $.ajax({
             type: options.type,
             url: options.url,
             headers: {
-                'API-KEY': api_key
+                'API-KEY': options.api_key
             },
             success: function(data) {
                 // console.log(data);
@@ -289,36 +288,81 @@
     // Sync Products
     $('#button-sync-products').on('click', function() {
         var options = {
-            type: 'GET',
-            url: 'index.php?route=extension/module/invoiceplane/syncproducts&token=<?php echo $session; ?>'
+            type: 'POST',
+            url: 'index.php?route=extension/module/invoiceplane/addip_product&token=<?php echo $session; ?>',
+            api_key: '<?php echo $invoiceplane_api_key; ?>'
         }
 
+        // Here we get all products from opencart and then loop to insert each time into IP
+        // Change to Chained reponse!
         $.ajax({
-            type: options.type,
-            url: options.url,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            success: function(data) {
-                console.log(data);
-                $('#product-sync-log').show();
-                $.each(data, function(i, item) {
-                    console.log(i);
-                    console.log(item.status);
-                    console.log(item[i].status);
-                    $('#product-logs').append('Updating: ' + item[i].message + '\r\n');
-                })
-            },
-            failure: function() {
-                console.log("Failure");
-            },
-            error: function() {
-                console.log('error');
-            },
-            complete: function() {
-                console.log("Complete");
-            }
-        });
+                type: 'GET',
+                url: 'index.php?route=extension/module/invoiceplane/getocproducts&token=<?php echo $session; ?>',
+                dataType: 'json',
+                cache: false,
+                success: function(data) {
+                    console.log(data);
+                    $('#product-sync-log').show();
+                    $.each(data, function(i, item) {
+                        $('#product-logs').append('Updating: ' + item.name + '\r\n');
+                        $.ajax({
+                            type: options.type,
+                            url: options.url,
+                            data: item,
+                            headers: {
+                                'API-KEY': options.api_key
+                            },
+                            dataType: 'json',
+                            cache: false,
+                            success: function(data) {
+                                console.log(data);
+                                $('#product-logs').append(data.message + '\r\n');
+                            },
+                            error: function() {
+                                console.log('error');
+                            },
+                            complete: function() {
+                                // console.log("Complete");
+                            }
+                        })
 
+                    })
+                },
+                error: function(e) {
+                    console.log('error');
+                }
+            })
+            /*
+                    $.ajax({
+                        type: options.type,
+                        url: options.url,
+                        headers: {
+                            'API-KEY': api_key
+                        },
+                        // contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        cache: false,
+                        success: function(data) {
+                            console.log(data);
+                            console.log("serialse", JSON.stringify(data));
+                            $('#product-sync-log').show();
+                            $.each(data, function(i, item) {
+                                console.log(i);
+                                console.log(item);
+                                // $('#product-logs').append('Updating: ' + item[i].message + '\r\n');
+                            })
+                        },
+                        failure: function() {
+                            console.log("Failure");
+                        },
+                        error: function() {
+                            console.log('error');
+                        },
+                        complete: function() {
+                            console.log("Complete");
+                        }
+                    });
+            */
     });
 
     // Reset
