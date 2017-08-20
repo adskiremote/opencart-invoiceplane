@@ -159,7 +159,19 @@ class ControllerExtensionModuleInvoicePlane extends Controller
     {
         $this->load->model('setting/setting');
         $this->model_setting_setting->deleteSetting('invoiceplane');
-    }
+	}
+	
+	/*
+	public function getconnection() {
+		$this->load->model('setting/setting');
+        $apiKey = $this->config->get('invoiceplane_api_key');
+        $apiUrl = $this->config->get('invoiceplane_url');
+
+		$invoicePlane = new InvoicePlane($apiKey, $apiUrl);
+		$result = $invoicePlane->connect();
+		$this->response->setOutut($result);
+	}
+	*/
 
    // Get all InvoicePlane Products
     public function getproducts()
@@ -210,7 +222,6 @@ class ControllerExtensionModuleInvoicePlane extends Controller
 		// This checks if Product has been added already.
 		// If it has we issue an update on the prodcut in IP
 		$result = $invoicePlane->addProduct($ip_product);
-		
 		$this->response->setOutput($result);
     }
 

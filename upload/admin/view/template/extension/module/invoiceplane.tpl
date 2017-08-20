@@ -81,8 +81,8 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Check connection</label>
                                 <div class="col-sm-10">
-                                    <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
-                                    <button type="button" onclick="repair();" id="button-repair" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-success"><i class="fa fa-wrench"></i> Check Connection</button>
+                                    <i class="fa fa-circle-o-notch fa-spin" style="display:none;"> </i>
+                                    <button type="button" id="button-chk-connection" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-warning"><i class="fa fa-wrench"></i> Check Connection</button>
                                 </div>
                             </div>
                         </div>
@@ -132,7 +132,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">Sync (one way)</label>
                                     <div class="col-sm-10">
-                                        <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                                        <i class="fa fa-circle-o-notch fa-spin" style="display:none;"> </i>
                                         <button type="button" id="button-sync-products" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary"><i class="fa fa-wrench"></i> Sync Products</button>
                                     </div>
                                 </div>
@@ -151,7 +151,7 @@
                             <fieldset>
                                 <legend>Customers to Clients</legend>
                                 Here you can recheck Customers and Clients are synced correctly.<br /> You should not need to run this again if On Sale and On Customer events are enabled.
-                                <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                                <i class="fa fa-circle-o-notch fa-spin" style="display:none;"> </i>
                                 <button type="button" onclick="repair();" id="button-repair" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary"><i class="fa fa-wrench"></i> Some button</button>
 
                             </fieldset>
@@ -160,7 +160,7 @@
                         <div class="tab-pane" id="tab-orders">
                             <legend>Sync Orders</legend>
                             Here you can recheck Orders to Invoices are synced correctly.<br /> You should not need to run this again if On Sale event is enabled.
-                            <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                            <i class="fa fa-circle-o-notch fa-spin" style="display:none;"> </i>
                             <button type="button" onclick="repair();" id="button-repair" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary"><i class="fa fa-wrench"></i> Some button</button>
                             </fieldset>
                         </div>
@@ -168,7 +168,7 @@
                         <div class="tab-pane" id="tab-payments">
                             <legend>Sync Payments</legend>
                             Here you can recheck Order Payments are synced correctly.<br /> You should not need to run this again if On Sale event is enabled.
-                            <i class="fa fa-circle-o-notch fa-spin" id="image-repair" style="display:none;"> </i>
+                            <i class="fa fa-circle-o-notch fa-spin" style="display:none;"> </i>
                             <button type="button" onclick="repair();" id="button-repair" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary"><i class="fa fa-wrench"></i> Some button</button>
                             </fieldset>
                         </div>
@@ -234,9 +234,41 @@
 
     $('#product-sync-log').hide();
 
+    $('#button-chk-connection').on('click', function() {
+        var options = {
+            type: 'GET',
+            url: '<?php echo $invoiceplane_url; ?>' + '/api/connect/',
+            api_key: '<?php echo $invoiceplane_api_key; ?>'
+        }
+        $.ajax({
+            type: options.type,
+            url: options.url,
+            headers: {
+                'API-KEY': options.api_key
+            },
+            dataType: 'json',
+            beforeSend: function() {
+                $('#button-chk-connection').prev().fadeIn();
+            },
+            success: function(data) {
+                if (data.status) {
+                    console.log(data);
+                    $('#button-chk-connection').toggleClass('btn-warning btn-success');
+                    $('#button-chk-connection').html('Connected');
+                } else {
+                    alert('connection error - check your settings');
+                }
+            },
+            complete: function() {
+                $('#button-chk-connection').prev().fadeOut();
+            }
+        })
+    });
+
     // Populate options
     $('#button-pop-options').on('click', function() {
         var options = {
+            type: 'GET',
             type: 'GET',
             url: '<?php echo $invoiceplane_url; ?>' + '/api/products/options/',
             api_key: '<?php echo $invoiceplane_api_key; ?>'
@@ -251,6 +283,9 @@
             url: options.url,
             headers: {
                 'API-KEY': options.api_key
+            },
+            beforeSend: function() {
+                $('#button-pop-options').prev().fadeIn();
             },
             success: function(data) {
                 // console.log(data);
@@ -279,6 +314,9 @@
             },
             error: function() {
                 alert('Error\n' + data.message);
+            },
+            complete: function() {
+                $('#button-pop-options').prev().fadeOut();
             }
         });
 
@@ -290,7 +328,6 @@
         var options = {
             type: 'POST',
             url: 'index.php?route=extension/module/invoiceplane/addip_product&token=<?php echo $session; ?>',
-            api_key: '<?php echo $invoiceplane_api_key; ?>'
         }
 
         // Here we get all products from opencart and then loop to insert each time into IP
@@ -309,9 +346,6 @@
                             type: options.type,
                             url: options.url,
                             data: item,
-                            headers: {
-                                'API-KEY': options.api_key
-                            },
                             dataType: 'json',
                             cache: false,
                             success: function(data) {
@@ -376,28 +410,6 @@
 
     });
 
-    function ajaxSend(options) {
-        console.log(options);
-        $.ajax({
-            type: options.type,
-            url: options.url,
-            crossDomain: true,
-            success: function(data) {
-                console.log(data);
-                if (data.success) {
-
-                } else {
-
-                }
-            },
-            failure: function() {
-
-            },
-            error: function() {
-
-            }
-        });
-    }
     //-->
 </script>
 <?php echo $footer; ?>
