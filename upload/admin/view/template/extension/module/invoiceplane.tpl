@@ -100,8 +100,8 @@
                                     <label class="col-sm-2 control-label">Product Family</label>
                                     <div class="col-sm-10">
                                         <select name="invoiceplane_product_family" id="invoiceplane_product_family" class="form-control">
-                                          <?php if ($invoiceplane_product_family) { ?>
-                                            <option value="<?php echo invoiceplane_product_family; ?>" selected="selected"><?php echo $invoiceplane_product_family; ?></option>
+                                            <?php if($invoiceplane_product_family) { ?>
+                                                <option value="<?php echo $invoiceplane_product_family; ?>" selected="selected"><?php echo $invoiceplane_product_family; ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
@@ -293,7 +293,7 @@
                     console.log(data);
                     // Populate Families
                     $.each(data.families, function(i, item) {
-                        $('#invoiceplane_product_family').append('<option value="' + item.family_id + '">' + item.family_name + '</option>');
+                        $('#invoiceplane_product_family').append('<option selected="selected" value="' + item.family_name + '">' + item.family_name + '</option>');
                     });
 
                     // Populate Tax Rates
@@ -333,70 +333,83 @@
         // Here we get all products from opencart and then loop to insert each time into IP
         // Change to Chained reponse!
         $.ajax({
-                type: 'GET',
-                url: 'index.php?route=extension/module/invoiceplane/getocproducts&token=<?php echo $session; ?>',
-                dataType: 'json',
-                cache: false,
-                success: function(data) {
-                    console.log(data);
-                    $('#product-sync-log').show();
-                    $.each(data, function(i, item) {
-                        $('#product-logs').append('Updating: ' + item.name + '\r\n');
-                        $.ajax({
-                            type: options.type,
-                            url: options.url,
-                            data: item,
-                            dataType: 'json',
-                            cache: false,
-                            success: function(data) {
-                                console.log(data);
-                                $('#product-logs').append(data.message + '\r\n');
-                            },
-                            error: function() {
-                                console.log('error');
-                            },
-                            complete: function() {
-                                // console.log("Complete");
-                            }
-                        })
-
-                    })
-                },
-                error: function(e) {
-                    console.log('error');
-                }
-            })
-            /*
+            type: 'GET',
+            url: 'index.php?route=extension/module/invoiceplane/getocproducts&token=<?php echo $session; ?>',
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                console.log(data);
+                $('#product-sync-log').show();
+                $.each(data, function(i, item) {
+                    $('#product-logs').append('Updating: ' + item.name + '\r\n');
                     $.ajax({
                         type: options.type,
                         url: options.url,
-                        headers: {
-                            'API-KEY': api_key
-                        },
-                        // contentType: "application/json; charset=utf-8",
+                        data: item,
                         dataType: 'json',
                         cache: false,
                         success: function(data) {
                             console.log(data);
-                            console.log("serialse", JSON.stringify(data));
-                            $('#product-sync-log').show();
-                            $.each(data, function(i, item) {
-                                console.log(i);
-                                console.log(item);
-                                // $('#product-logs').append('Updating: ' + item[i].message + '\r\n');
-                            })
-                        },
-                        failure: function() {
-                            console.log("Failure");
+                            $('#product-logs').append(data.message + '\r\n');
                         },
                         error: function() {
                             console.log('error');
                         },
                         complete: function() {
-                            console.log("Complete");
+                            // console.log("Complete");
                         }
-                    });
-            */
+                    })
+
+                })
+            },
+            error: function(e) {
+                console.log('error');
+            }
+        })
+    });
+
+    $('#button-sync-customers').on('click', function() {
+        var options = {
+            type: 'POST',
+            url: 'index.php?route=extension/module/invoiceplane/addip_client&token=<?php echo $session; ?>',
+        }
+
+        // Here we get all customers from opencart and then insert into IP Clients
+        // Change to Chained reponse!
+        $.ajax({
+            type: 'GET',
+            url: 'index.php?route=extension/module/invoiceplane/getoc_customers&token=<?php echo $session; ?>',
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                console.log(data);
+                $('#customer-sync-log').show();
+                $.each(data, function(i, item) {
+                    $('#customer-logs').append('Updating: ' + item.name + '\r\n');
+                    $.ajax({
+                        type: options.type,
+                        url: options.url,
+                        data: item,
+                        dataType: 'json',
+                        cache: false,
+                        success: function(data) {
+                            console.log(data);
+                            $('#customer-logs').append(data.message + '\r\n');
+                        },
+                        error: function() {
+                            console.log('error');
+                        },
+                        complete: function() {
+                            // console.log("Complete");
+                        }
+                    })
+
+                })
+            },
+            error: function(e) {
+                console.log('error');
+            }
+        })
     });
 
     // Reset

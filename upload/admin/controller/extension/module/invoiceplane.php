@@ -20,21 +20,24 @@ class ControllerExtensionModuleInvoicePlane extends Controller
         $data = array();
         
         //Save settings
-        if (isset($this->request->post['invoiceplane_api_key'])) {
-             $data = $this->request->post;
-             $this->model_setting_setting->editSetting('invoiceplane', $this->request->post);
+        if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+				$this->load->model('setting/setting');
+				$post_data = $this->request->post;
+				$this->log->write($post_data['invoiceplane_product_family']);
+
+				$this->log->write($post_data);
+				$this->model_setting_setting->editSetting($this->extension, $post_data);	
+				//$json['success'] = $this->language->get('text_success_general_save');
+			
+			// $data = $this->request->post;
+			 
+			// $data['invoiceplane_product_family'] = array('family_id' => '2', 'name' => 'testme');
+			// $this->log->write($data);
+           //  $this->model_setting_setting->editSetting('invoiceplane', $data);
                     
             $this->session->data['success'] = $this->language->get('text_success');
-            $this->response->redirect($this->url->link('extension/module/invoiceplane', 'token=' . $this->session->data['token'] . '&type=module', true));
-        } else {
-             $data['invoiceplane_api_key'] = $this->config->get('invoiceplane_api_key');
-             $data['invoiceplane_url'] = $this->config->get('invoiceplane_url');
-             $data['invoiceplane_on_order'] = $this->config->get('invoiceplane_on_order');
-             $data['invoiceplane_product_family'] = $this->config->get('invoiceplane_product_family');
-             $data['invoiceplane_tax_rates'] = $this->config->get('invoiceplane_tax_rates');
-             $data['invoiceplane_unit_id'] = $this->config->get('invoiceplane_unit_id');
-            // $this->log->write($data);
-        }
+            $this->response->redirect($this->url->link('extension/module/invoiceplane', 'token=' . $this->session->data['token'] . '&type=module', false));
+		}
         
         $text_strings = array(
                 'heading_title',
@@ -120,12 +123,14 @@ class ControllerExtensionModuleInvoicePlane extends Controller
             $data['invoiceplane_on_order'] = $this->config->get('invoiceplane_on_order');
         }
 
-        // This block parses InvoicePlane Product Family
+		// This block parses InvoicePlane Product Family
+		// $data['invoiceplane_product_family'] = array();
         if (isset($this->request->post['invoiceplane_product_family'])) {
             $data['invoiceplane_product_family'] = $this->request->post['invoiceplane_product_family'];
         } else {
-            $data['invoiceplane_product_family'] = $this->config->get('invoiceplane_product_family');
-        }
+			$this->log->write($this->config->get('invoiceplane_product_family'));
+			$data['invoiceplane_product_family'] = $this->config->get('invoiceplane_product_family');
+		}
 
         // This block parses InvoicePlane Unit ID
         if (isset($this->request->post['invoiceplane_unit_id'])) {
@@ -139,7 +144,19 @@ class ControllerExtensionModuleInvoicePlane extends Controller
             $data['invoiceplane_tax_rates'] = $this->request->post['invoiceplane_tax_rates'];
         } else {
             $data['invoiceplane_tax_rates'] = $this->config->get('invoiceplane_tax_rates');
-        }
+		}
+
+		$this->log->write("Without decode");
+		$this->log->write($this->config->get('invoiceplane_product_family')->family_id);
+		$this->log->write("With decode");
+		$array = json_decode(json_encode($this->config->get('invoiceplane_product_family'), true));
+		$this->log->write($array);
+
+		$data['invoiceplane_product_family'] = $test;
+		
+	//	$data['invoiceplane_product_family']['family_name'] = $this->config->get('invoiceplane_product_family'->family_name);
+//		$data['invoiceplane_product_family']['family_id'] = $this->config->get('invoiceplane_product_family'->family_id);
+		// $this->log->write($data['invoiceplane_product_family']);
 
         
         //Prepare for display
@@ -159,6 +176,31 @@ class ControllerExtensionModuleInvoicePlane extends Controller
     {
         $this->load->model('setting/setting');
         $this->model_setting_setting->deleteSetting('invoiceplane');
+	}
+
+	public function save() {
+		$this->log->write("saving...");
+		$json = array();
+		
+		$this->load->language($this->oc_extension . $this->type . '/' . $this->extension);
+		
+		if ($this->validate()) {
+			if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
+				$this->load->model('setting/setting');
+				$json = array();
+				$post_data = $this->request->post;
+				foreach ($post_data as $key => $value) {
+					$post_data[$key] = $this->value($value);
+				}
+				$this->model_setting_setting->editSetting($this->extension, $post_data);	
+				$json['success'] = $this->language->get('text_success_general_save');
+			} else {
+				$json['error'] = $this->language->get('error_post');
+			}
+		} else {
+			$json['error'] = $this->language->get('error_permission');
+		}
+		$this->response->setOutput(json_encode($json));
 	}
 	
 	/*
